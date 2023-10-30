@@ -1,6 +1,7 @@
 # Gelato <> Synthetix
 
 ## Problem Statement
+
 Automatic Minting (mint when cratio > issuanceRatio)
 Automatic Claiming (claim when cratio > issuanceRatio AND [TODO rewardsAvailable > 0])
  
@@ -10,7 +11,7 @@ read collateralisationRatio of address from Issuer https://etherscan.io/address/
 read issuanceRatio from SystemSettings https://etherscan.io/address/0x202ae40Bed1640b09e2AF7aC5719D129A498B7C8#readContract
 if  collateralisationRatio > issuanceRatio then
 issueMaxSynthsOnBehalf (0xfd864ccf)  for address in https://etherscan.io/address/0xca68a3D663483515a9D434E854AB59A41b3A523c#writeContract 
----
+
 
 Automatic Claiming
 

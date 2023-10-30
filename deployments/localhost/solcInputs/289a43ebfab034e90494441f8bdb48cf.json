@@ -1,0 +1,35 @@
+{
+  "language": "Solidity",
+  "sources": {
+    "contracts/SnxMintResolver.sol": {
+      "content": "// SPDX-License-Identifier: UNLICENSED\npragma solidity 0.8.16;\n\ninterface ISynstemSettings {\n    function issuanceRatio() external view returns (uint);\n}\n\ninterface IIssuer {\n    function collateralisationRatio(\n        address issuer\n    ) external view returns (uint);\n}\n\ninterface IDelegateApprovals {\n    function canIssueFor(\n        address authoriser,\n        address delegate\n    ) external view returns (bool);\n}\n\ninterface ISynthetix {\n   function issueMaxSynthsOnBehalf(address issueForAddress) external;\n}\n\ninterface IOpsProxyFactory {\n    function getProxyOf(address account) external view returns (address, bool);\n}\n\ncontract SnxMintResolver {\n    address private constant OPS_PROXY_FACTORY =\n        address(0xC815dB16D4be6ddf2685C201937905aBf338F5D7);\n    address public constant APPROVALS =\n        address(0x15fd6e554874B9e70F832Ed37f231Ac5E142362f);\n    address public constant ISSUER =\n        address(0xca68a3D663483515a9D434E854AB59A41b3A523c);\n    address public constant SYSTEM_SETTINGS =\n        address(0x202ae40Bed1640b09e2AF7aC5719D129A498B7C8);\n    address public constant SYNTHETIX = (\n        0xd0dA9cBeA9C3852C5d63A95F9ABCC4f6eA0F9032\n    );\n\n    function checker(\n        address _account\n    ) external view returns (bool, bytes memory execPayload) {\n        (address dedicatedMsgSender, ) = IOpsProxyFactory(OPS_PROXY_FACTORY)\n            .getProxyOf(_account);\n\n        uint256 cRatio = IIssuer(ISSUER).collateralisationRatio(_account);\n        uint256 insuranceRatio = ISynstemSettings(SYSTEM_SETTINGS)\n            .issuanceRatio();\n\n        if (cRatio >= insuranceRatio) {\n            execPayload = bytes(\"Mint not requested\");\n            return (false, execPayload);\n        }\n\n        if (\n            !IDelegateApprovals(APPROVALS).canIssueFor(\n                _account,\n                dedicatedMsgSender\n            )\n        ) {\n            execPayload = bytes(\"Not approved for Issuing\");\n            return (false, execPayload);\n        }\n\n        execPayload = abi.encodeWithSelector(\n            ISynthetix(SYNTHETIX).issueMaxSynthsOnBehalf.selector,\n            _account\n        );\n\n        return (true, execPayload);\n    }\n}\n"
+    }
+  },
+  "settings": {
+    "optimizer": {
+      "enabled": false,
+      "runs": 200
+    },
+    "outputSelection": {
+      "*": {
+        "*": [
+          "abi",
+          "evm.bytecode",
+          "evm.deployedBytecode",
+          "evm.methodIdentifiers",
+          "metadata",
+          "devdoc",
+          "userdoc",
+          "storageLayout",
+          "evm.gasEstimates"
+        ],
+        "": [
+          "ast"
+        ]
+      }
+    },
+    "metadata": {
+      "useLiteralContent": true
+    }
+  }
+}

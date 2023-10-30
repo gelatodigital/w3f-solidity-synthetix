@@ -17,9 +17,9 @@ Automatic Claiming
 
 
 We have this setup on Optimism already, but want it for Ethereum https://app.gelato.network/task/0x8a370a89fa2d31b0bc46b74a198ebd43a67fc19d5133200548cd5e2e79b7e179?chainId=10&ref=blog.synthetix.io
-
 if  collateralisationRatio >= issuanceRatio  AND [TODO: rewardsAvailable]
 claimOnBehalf as in Optimism example
+
 ---
 
 ## Proposed Solution
